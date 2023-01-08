@@ -1,0 +1,317 @@
+{
+	"info": {
+		"_postman_id": "039b4240-7d42-4927-8baa-36d9766eb636",
+		"name": "GitHubAPIs_TestSample",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24545160"
+	},
+	"item": [
+		{
+			"name": "Get authenticated user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Set Env Var User if status code is 200\", function () {\r",
+							"    if (pm.response.to.have.status(200)){\r",
+							"        jsonParsed = JSON.parse(responseBody)\r",
+							"        pm.environment.set(\"User\", jsonParsed.login)\r",
+							"        console.log(jsonParsed.login)\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/user",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LIST REPOSITORIES for a user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/{{User}}/repos",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"{{User}}",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a repository",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Set collection Var NewRepo if staus is 201\", function () {\r",
+							"    if (pm.response.to.have.status(201)){\r",
+							"        jsonParsed = JSON.parse(responseBody)\r",
+							"        pm.collectionVariables.set(\"NewRepo\", jsonParsed.name)\r",
+							"        console.log(jsonParsed.name)\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{User}}-NewRepo\",\r\n    \"description\": \"This is {{User}}'s new Repo!\",\r\n    \"homepage\": \"https://github.com\",\r\n    \"private\": false,\r\n    \"is_template\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/user/repos",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"user",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a repository",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"parsed = JSON.parse(responseBody)\r",
+							"tests[\"Assert\"] = parsed.name == pm.collectionVariables.get(\"NewRepo\")\r",
+							"console.log(\"Response name = \"+parsed.name+\"  NewRepo = \"+pm.collectionVariables.get(\"NewRepo\"))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/repos/{{User}}/{{NewRepo}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"repos",
+						"{{User}}",
+						"{{NewRepo}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a repository",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Change NewRepo Var if status code is 200\", function () {\r",
+							"    if(pm.response.to.have.status(200)){\r",
+							"        parsedResponse = JSON.parse(responseBody)\r",
+							"        pm.collectionVariables.set(\"NewRepo\", parsedResponse.name)\r",
+							"        console.log(parsedResponse.name) \r",
+							"    }\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{NewRepo}}-updated\",\r\n    \"description\": \"This is updated {{NewRepo}}\",\r\n    \"homepage\": \"https://github.com\",\r\n    \"private\": true,\r\n    \"has_issues\": true,\r\n    \"has_projects\": true,\r\n    \"has_wiki\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/repos/{{User}}/{{NewRepo}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"repos",
+						"{{User}}",
+						"{{NewRepo}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a repository",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/repos/{{User}}/{{NewRepo}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"repos",
+						"{{User}}",
+						"{{NewRepo}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LIST REPOSITORIES after DELETE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/{{User}}/repos",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"{{User}}",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "tokenType",
+				"value": "",
+				"type": "string"
+			},
+			{
+				"key": "accessToken",
+				"value": "{{Token}}",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "NewRepo",
+			"value": "null",
+			"type": "string"
+		}
+	]
+}
