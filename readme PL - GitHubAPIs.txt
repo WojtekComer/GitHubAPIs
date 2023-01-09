@@ -29,5 +29,10 @@ GitHubAPIs_TestSample
      > Logowanie na konsole
      > Korzystanie ze Snippets'ow 
    
+UWAGA!:
+Po wypushowaniu tego projektu do repozytorium, wewnetrzny security scaner na githubie zdezaktualizowal zainicjowany token.
+Projekt wymaga odswiezenia tokena zdefiniowanego w srodowisku 'GitHub Environment', po jego zaimportowaniu.
+Scope tokenu jest ustawiony w taki sposob, ze nie ujawnia wrazliwych danych wiec moge go w razie potrzeby udostepnic 
+osobie zainteresowanej, do weryfikacji dzialania projektu.
 
       
